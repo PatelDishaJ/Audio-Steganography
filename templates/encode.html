@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Encode</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function toggleInputs(selectedInput) {
+            var messageInput = document.getElementById("secret_message");
+            var imageInput = document.getElementById("image_file");
+
+            if (selectedInput.id === "secret_message") {
+                imageInput.value = ""; // Clear image selection
+                imageInput.disabled = true;
+                messageInput.required = true;
+                imageInput.required = false;
+            } else if (selectedInput.id === "image_file") {
+                messageInput.value = ""; // Clear text input
+                messageInput.disabled = true;
+                imageInput.required = true;
+                messageInput.required = false;
+            }
+        }
+
+        function resetInputs() {
+            var messageInput = document.getElementById("secret_message");
+            var imageInput = document.getElementById("image_file");
+
+            if (!messageInput.value && !imageInput.value) {
+                messageInput.disabled = false;
+                imageInput.disabled = false;
+                messageInput.required = false;
+                imageInput.required = false;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Encode a Secret</h1>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST" enctype="multipart/form-data">
+            <label for="audio_file">Audio File:</label>
+            <input type="file" name="audio_file" id="audio_file" required>
+
+            <label for="secret_message">Secret Message (or leave empty to upload an image):</label>
+            <textarea name="secret_message" id="secret_message" oninput="toggleInputs(this); resetInputs();"></textarea>
+
+            <label for="image_file">Or Upload an Image:</label>
+            <input type="file" name="image_file" id="image_file" onchange="toggleInputs(this); resetInputs();">
+
+            <button type="submit">Encode</button>
+        </form>
+        
+        {% if download_url %}
+            <a href="{{ download_url }}" class="download-link">Download Encoded Audio</a>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decode</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Decode a Message</h1>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST" enctype="multipart/form-data">
+            <label for="audio_file">Audio File:</label>
+            <input type="file" name="audio_file" id="audio_file" required>
+            <button type="submit">Decode</button>
+        </form>
+        {% if message %}
+            <h2>Decoded Message:</h2>
+            <p>{{ message }}</p>
+        {% endif %}
+    </div>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Decode</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Decode a Secret</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="audio_file">Audio File:</label>
+            <input type="file" name="audio_file" id="audio_file" required>
+            <button type="submit">Decode</button>
+        </form>
+        {% if message %}
+            <h2>Decoded Message:</h2>
+            <p>{{ message }}</p>
+        {% elif image_url %}
+            <h2>Extracted Image:</h2>
+            <a href="{{ image_url }}" download>Download Extracted Image</a>
+        {% endif %}
+    </div>
+</body>
+</html>

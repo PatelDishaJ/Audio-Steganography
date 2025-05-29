@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_file,
 import os
 from algorithms.encode import encode
 from algorithms.decode import decode
+import tempfile
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -21,29 +22,36 @@ def index():
 def encode_audio():
     if request.method == 'POST':
         audio_file = request.files['audio_file']
-        secret_message = request.form.get('secret_message', '')  # May be empty
-        image_file = request.files.get('image_file')  # Optional
+        secret_message = request.form.get('secret_message', '')
+        image_file = request.files.get('image_file')
 
         if not audio_file or (not secret_message and not image_file):
             flash('Please upload an audio file and either enter a message or upload an image.')
             return redirect(url_for('encode_audio'))
 
-        audio_path = os.path.join(UPLOAD_FOLDER, audio_file.filename)
-        output_filename = f"encoded_{audio_file.filename}"
-        output_path = os.path.join(RESULT_FOLDER, output_filename)
-
+        # Save to /tmp for Vercel compatibility
+        audio_path = os.path.join('/tmp', audio_file.filename)
         audio_file.save(audio_path)
+
+        output_filename = f"encoded_{audio_file.filename}"
+        output_path = os.path.join('/tmp', output_filename)
 
         try:
             if image_file:
-                image_path = os.path.join(UPLOAD_FOLDER, image_file.filename)
+                image_path = os.path.join('/tmp', image_file.filename)
                 image_file.save(image_path)
                 encode(audio_path, output_path, secret_message=None, image_path=image_path)
             else:
                 encode(audio_path, output_path, secret_message, image_path=None)
 
+            # Move file to static/results/ (optional if you want to serve it)
+            result_final_path = os.path.join(RESULT_FOLDER, output_filename)
+            os.makedirs(RESULT_FOLDER, exist_ok=True)
+            os.replace(output_path, result_final_path)
+
             flash('Encoding successful! Download the encoded audio below.')
             return render_template('encode.html', download_url=url_for('download_file', filename=output_filename))
+
         except Exception as e:
             flash(f'Error: {e}')
             return redirect(url_for('encode_audio'))

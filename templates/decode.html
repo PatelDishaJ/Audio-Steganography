@@ -18,6 +18,7 @@
             <label for="audio_file">Audio File:</label>
             <input type="file" name="audio_file" id="audio_file" required>
             <button type="submit">Decode</button>
+            <a href="/" class="download-link">Back</a>
         </form>
         {% if message %}
             <h2>Decoded Message:</h2>
@@ -48,6 +49,8 @@
             <h2>Extracted Image:</h2>
             <a href="{{ image_url }}" download>Download Extracted Image</a>
         {% endif %}
+    </br>
+        <a href="/" class="download-link">Back</a>
     </div>
 </body>
 </html>
